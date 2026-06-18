@@ -19,21 +19,20 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Main_scri
     for i = 1:n
         myelin_thick{i} = myelin_thickness{i};
         gratio{i} = g_ratio{i};
-        m= Cullen2018CortexAxonJPNlocalized_Kv12();
-        %m.myel.geo.width.value.ref=myelin_thickness{i};
-        %m.myel.geo.numlamellae.value.vec=myelin_thickness{i};
-        m.intn.geo.diam.value.ref= myelin_thick{i};
-        m.myel.geo.gratio.value.ref= gratio{i}
-        m.sim.dt.value=time_step;
-        [membrane_pot{i}, internode_length{i}, time_vector{i}] = ModelJPN_MTR(m);
 
+        m= Cullen2018CortexAxonJPNlocalized_Kv12();
+        m.sim.dt.value=time_step;
+
+        m = UpdateInternodeSegmentDiameter(m, myelin_thick{i});
+        m = UpdateInternodeGRatio(m, gratio{i});
+        
+        [membrane_pot{i}, internode_length{i}, time_vector{i}] = ModelJPN_MTR(m);
         
 
         [max1, idx1] = max(membrane_pot{i}(:,node1));
         [max2, idx2] = max(membrane_pot{i}(:,node2));
-        dist_um=sum(internode_length{i}(node1:node2,1))
-        cv{i}= dist_um / ((idx2-idx1))
-
+        dist_um=sum(internode_length{i}(node1:node2,1));
+        cv{i}= dist_um / ((idx2-idx1));
 
         figure (1)
         subplot(3,3,i)
@@ -49,7 +48,7 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Main_scri
     figure(2)
     b = bar(categorical(string(x)), y);
     
-    ylim([min(y)*0.98 max(y)*1.02]);
+    %ylim([min(y)*0.98 max(y)*1.02]);
 
     b.FaceColor = 'flat';
     b.CData = parula(n);
