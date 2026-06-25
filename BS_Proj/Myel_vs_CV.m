@@ -37,8 +37,18 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_C
 
         [~, idx1] = max(membrane_pot{i}(:,node1));          % ~ was max1
         [~, idx2] = max(membrane_pot{i}(:,node2));          % ~ was max2
+
         dist_um=sum(internode_length{i}(node1:node2,1));
-        cv{i} = (dist_um * 1e-6) / ((idx2 - idx1) * time_step * 1e-3);
+
+
+        row_difference = idx2 - idx1;
+        time_vec = time_vector{i}(idx2) - time_vector{i}(idx1);
+
+        disp(['Row steps between peaks: ', num2str(row_difference)])
+        disp(['Distance in time: ', num2str(time_vec)])
+
+
+        cv{i} = dist_um / (time_vector{i}(idx2) - time_vector{i}(idx1));
 
         %figure (1)
         %subplot(n/2,n/2,i)

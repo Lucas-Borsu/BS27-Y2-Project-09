@@ -4,7 +4,8 @@ function par = Cullen2018CortexAxonJPNlocalized_Kv12(jpn_cond)
 par =                                                                   GenerateEmptyParameterStructure();
 
 % Simulation parameters
-par.sim.temp =                                                          21;
+par.sim.temp =                                                          37; %changed from 21 to 37 to try
+7
 par.sim.dt.value =                                                      0.1;
 par.sim.dt.units =                                                      {1, 'us', 1};
 par.sim.tmax.value =                                                    5;
