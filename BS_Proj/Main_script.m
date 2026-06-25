@@ -29,8 +29,8 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Main_scri
         [membrane_pot{i}, internode_length{i}, time_vector{i}] = ModelJPN_MTR(m);
         
 
-        [max1, idx1] = max(membrane_pot{i}(:,node1));
-        [max2, idx2] = max(membrane_pot{i}(:,node2));
+        [~, idx1] = max(membrane_pot{i}(:,node1));          % ~ was max1
+        [~, idx2] = max(membrane_pot{i}(:,node2));          % ~ was max2
         dist_um=sum(internode_length{i}(node1:node2,1));
         cv{i}= dist_um / ((idx2-idx1));
 
