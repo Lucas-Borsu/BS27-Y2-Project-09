@@ -1,16 +1,19 @@
 
 function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_CV (n_myel, time_step)
     arguments
-        n_myel = 20
+        n_myel = 25
         time_step = 1
     end
 
     n = n_myel;
     def_myel= 0.5894;
-    idx75= round(n*0.75);
-    max_val= def_myel*(n-1)/(idx75-1);
+    idx60= round(n*0.60);
 
-    myel_thick= linspace (0, max_val,n);
+    step_size = def_myel/idx60;
+    min_val= step_size;
+    max_val = min_val + step_size * (n - 1);
+
+    myel_thick= linspace (min_val, max_val,n);
 
     node1 = 15;
     node2 = 35;
@@ -48,7 +51,7 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_C
     x = cell2mat(myelin_thick);
     y = cell2mat(cv);
     
-    figure(2)
+    figure(1)
     % 1. Create the line plot
     plot(x, y, '-o', 'LineWidth', 2, 'MarkerFaceColor', 'b', 'MarkerSize', 6)
     grid on
@@ -57,11 +60,26 @@ function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_C
     ylabel('Conduction Velocity (µm/ms)')
     title('Conduction Velocity vs. Myelin Thickness')
     
-    % 2. Add a text label precisely at the default myelin thickness (idx75)
-    x_target = x(idx75);
-    y_target = y(idx75);
+    ax = gca; % Get current axes
     
-    % text(x_pos, y_pos, 'String') - adjusted slightly so it doesn't overlap the data point
-    text(x_target, y_target, ' \leftarrow base value = 0.5894', ...
-        'FontSize', 10, 'FontWeight', 'bold', 'HorizontalAlignment', 'left');
+    % Get the standard numeric tick values MATLAB automatically picked
+    default_ticks = ax.XTick;
+    
+    % 1. Create a clean list of ticks including your exact base value
+    base_val = x(idx60);
+    custom_ticks = unique(sort([default_ticks, base_val]));
+    
+    % 2. Find and remove any default tick that is too close to the base value
+    % We use a small threshold (e.g., 0.03) to catch 0.6 without losing other numbers
+    too_close = abs(custom_ticks - base_val) < 0.03 & (custom_ticks ~= base_val);
+    custom_ticks(too_close) = []; % Deletes the overlapping tick (like 0.6)
+    
+    % 3. Apply the filtered ticks back to the axis
+    ax.XTick = custom_ticks;
+    
+    % 4. Create and apply the string labels
+    tick_labels = string(custom_ticks);
+    base_tick_idx = find(custom_ticks == base_val);
+    tick_labels(base_tick_idx) = "base value (" + string(base_val) + ")";
+    ax.XTickLabel = tick_labels;
 end
