@@ -1,15 +1,16 @@
 
-function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_CV (n_myel, time_step)
+function [membrane_pot, internode_length, time_vector, myelin_thick] = Myel_vs_CV (n_myel,indx, time_step)
     arguments
         n_myel = 25
+        idx=0.6
         time_step = 1
     end
 
     n = n_myel;
     def_myel= 0.5894;
-    idx60= round(n*0.60);
+    idx= round(n*indx);
 
-    step_size = def_myel/idx60;
+    step_size = def_myel/idx;
     min_val= step_size;
     max_val = min_val + step_size * (n - 1);
 

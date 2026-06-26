@@ -8,19 +8,13 @@ function Channel_exp (myelin_thickness, time_step)
     time_vector = cell(1, 2);
     cv = cell(1, 2);
 
-    Kv12_exp= Cullen2018CortexAxonJPNlocalized_Kv12();
+    Kv12_exp= Cullen2018CortexAxonJPNlocalized_Kv12_exp();
     Kv12_exp.sim.dt.value=time_step;
     
-    Kv12_exp = UpdateInternodeGRatio(Kv12_exp, 1.0, [], [1, 2,3,4]);
+    Kv12_exp = UpdateInternodeGRatio(Kv12_exp, 0.999, [], [1, 2, 3, 4]);
             
     Kv12_exp.channels(4).location = [Kv12_exp.geo.juxtaparanodeSegments{:}]';
     Kv12_exp.active.segments = unique(cat(1, Kv12_exp.channels(:).location));
-
-    disp('--- Condition 1 (Stripped) Juxtaparanode Capacitance: ---')
-    disp(Kv12_exp.geo.C_m(3)) % Check segment 3's capacitance
-    
-    disp('--- Condition 2 (Modified) Juxtaparanode Capacitance: ---')
-    disp(m.geo.C_m(3))
 
     [membrane_pot{1}, internode_length{1}, time_vector{1}] = ModelJPN_MTR(Kv12_exp);
 

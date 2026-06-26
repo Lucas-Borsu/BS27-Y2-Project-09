@@ -1,4 +1,4 @@
-function par = Cullen2018CortexAxonJPNlocalized_Kv12(jpn_cond)
+function par = Cullen2018CortexAxonJPNlocalized_Kv12_exp(jpn_cond)
 
 % Initialize all parameters.
 par =                                                                   GenerateEmptyParameterStructure();
@@ -181,12 +181,29 @@ par.myel.geo.period.units =                                             {1, 'nm'
 % g-ratio (internode axon diameter to internode outer diameter ratio)
 par.myel.geo.gratio.value.ref =                                         0.724;
 par.myel.geo.gratio.value.vec_ref =                                     par.myel.geo.gratio.value.ref * ones(par.geo.nintn, par.geo.nintseg);
-
+par.myel.geo.gratio.value.vec_ref(:, [1,2,3,4,49,50,21,52]) =           1;
 % Set units of myelin width.
 par.myel.geo.width.units =                                              {1, 'um', 1};
 
+
+% 1. Start with the uniform baseline matrix as usual
+par.myel.geo.gratio.value.vec_ref = par.myel.geo.gratio.value.ref * ones(par.geo.nintn, par.geo.nintseg);
+
+% 2. Loop through each internode and alter only the JPN columns
+for i = 1:par.geo.nintn
+    % Extract global JPN indices for this internode
+    global_jpn_indices = par.geo.juxtaparanodeSegments{i};
+    
+    % Convert the global segment indices into relative 1-to-52 column indices
+    % (Subtracting 1, modding by total segments per repeat cycle, then adding 1)
+    jpn_cols = mod(global_jpn_indices - 1, par.geo.nintseg) + 1;
+    
+    % Intentionally thin the myelin (increase g-ratio) strictly at the JPN locations
+    par.myel.geo.gratio.value.vec_ref(i, jpn_cols) = 0.95; 
+end
+
 % Update number of myelin lamellae in separate function
-par =                                                                   CalculateNumberOfMyelinLamellae(par, 'max');
+par =                                                                   CalNofMyelLamellae2(par, 'max');
 
 % Restrict periaxonal space around the paranodes.
 % We need to use 'min' to update the number of myelin lamellae, as reducing
